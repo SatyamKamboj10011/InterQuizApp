@@ -1,5 +1,7 @@
 package com.satyam.FinalProjectBackend.models;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 @Entity
@@ -14,8 +16,9 @@ public class Question {
     private String option2;
     private String option3;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "quiz_id")
+    @com.fasterxml.jackson.annotation.JsonBackReference
     private Quiz quiz;
 
     public Question() {}

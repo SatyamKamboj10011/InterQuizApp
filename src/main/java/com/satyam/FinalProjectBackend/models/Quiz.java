@@ -1,9 +1,10 @@
 package com.satyam.FinalProjectBackend.models;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import jakarta.persistence.*;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity(name = "quiz")
 public class Quiz {
@@ -12,74 +13,51 @@ public class Quiz {
     private Long id;
 
     private String name;
-
     private String category;
-
     private String difficulty;
+    private LocalDate startDate;
+    private LocalDate endDate;
+    private String creator;
 
+    @OneToMany(mappedBy = "quiz", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+   @JsonManagedReference
+    private List<Question> questions = new ArrayList<>();
 
-    private String startDate;
+    // Constructors
+    public Quiz() {}
 
-
-    private String endDate;
-
-    public Quiz(Long id, String name, String category, String difficulty, String startDate, String endDate) {
+    public Quiz(Long id, String name, String category, String difficulty, LocalDate startDate, LocalDate endDate, String creator) {
         this.id = id;
         this.name = name;
         this.category = category;
         this.difficulty = difficulty;
         this.startDate = startDate;
         this.endDate = endDate;
-    }
-    public Quiz(){
-
+        this.creator = creator;
     }
 
-    public Long getId() {
-        return id;
-    }
+    // Getters & Setters
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+    public String getName() { return name; }
+    public void setName(String name) { this.name = name; }
 
-    public String getName() {
-        return name;
-    }
+    public String getCategory() { return category; }
+    public void setCategory(String category) { this.category = category; }
 
-    public void setName(String name) {
-        this.name = name;
-    }
+    public String getDifficulty() { return difficulty; }
+    public void setDifficulty(String difficulty) { this.difficulty = difficulty; }
 
-    public String getCategory() {
-        return category;
-    }
+    public LocalDate getStartDate() { return startDate; }
+    public void setStartDate(LocalDate startDate) { this.startDate = startDate; }
 
-    public void setCategory(String category) {
-        this.category = category;
-    }
+    public LocalDate getEndDate() { return endDate; }
+    public void setEndDate(LocalDate endDate) { this.endDate = endDate; }
 
-    public String getDifficulty() {
-        return difficulty;
-    }
+    public String getCreator() { return creator; }
+    public void setCreator(String creator) { this.creator = creator; }
 
-    public void setDifficulty(String difficulty) {
-        this.difficulty = difficulty;
-    }
-
-    public String getStartDate() {
-        return startDate;
-    }
-
-    public void setStartDate(String startDate) {
-        this.startDate = startDate;
-    }
-
-    public String getEndDate() {
-        return endDate;
-    }
-
-    public void setEndDate(String endDate) {
-        this.endDate = endDate;
-    }
+    public List<Question> getQuestions() { return questions; }
+    public void setQuestions(List<Question> questions) { this.questions = questions; }
 }

@@ -15,47 +15,42 @@ import java.util.List;
 public class QuestionService {
 
     @Autowired
-    public QuestionRepo questionRepo;
+    private QuestionRepo questionRepo;
 
-    // ✅ Save a question to the database
+    // ✅ Save a question manually if needed
     public Question saveQuestion(Question question) {
-        return questionRepo.save(question); // ❗ fixed missing ')'
+        return questionRepo.save(question);
     }
 
-    // ✅ Get all questions for a specific quiz
+    // ✅ Get all questions for a specific quiz ID
     public List<Question> getQuestionBasedonQuizId(Long quizId) {
         return questionRepo.findByQuizId(quizId);
     }
 
-    // ✅ Fetch 10 questions from OpenTDB and save them for a quiz
+    // ✅ Clears previous questions and fetches 10 new ones from OpenTDB
     public void fetchFromOpenTDBAndSave(Quiz quiz) {
-        // OpenTDB API to get 10 questions
+        // Clear old questions for this quiz (prevent duplicates or recursive nesting)
+        questionRepo.deleteByQuiz(quiz); // ❗ Requires custom method in QuestionRepo
+
+        // OpenTDB API for 10 multiple choice questions
         String url = "https://opentdb.com/api.php?amount=10&type=multiple";
 
         RestTemplate restTemplate = new RestTemplate();
-
-        // Fetch and map the JSON response to OpenTDBResponse class
         OpenTDBResponse response = restTemplate.getForObject(url, OpenTDBResponse.class);
 
-        // If data is received successfully
         if (response != null && response.getResults() != null) {
             for (OpenTDBQuestion item : response.getResults()) {
                 Question question = new Question();
-
-                // Set question text and correct answer
                 question.setQuestionText(item.getQuestion());
                 question.setCorrectAnswer(item.getCorrect_answer());
 
-                // Use incorrect answers as wrong options
+                // Safe handling of wrong options
                 List<String> wrong = item.getIncorrect_answers();
-                question.setOption1(wrong.get(0));
+                question.setOption1(wrong.size() > 0 ? wrong.get(0) : "");
                 question.setOption2(wrong.size() > 1 ? wrong.get(1) : "");
                 question.setOption3(wrong.size() > 2 ? wrong.get(2) : "");
 
-                // Link this question to the quiz
                 question.setQuiz(quiz);
-
-                // Save the question to DB
                 questionRepo.save(question);
             }
         }
