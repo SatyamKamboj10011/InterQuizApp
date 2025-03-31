@@ -4,6 +4,7 @@ import com.satyam.FinalProjectBackend.models.Quiz;
 import com.satyam.FinalProjectBackend.services.QuestionService;
 import com.satyam.FinalProjectBackend.services.QuizService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.*;
 
@@ -45,9 +46,12 @@ public class QuizController {
         return "Quiz deleted Successfully!";
     }
     @GetMapping("/{id}")
-    public Optional<Quiz> getQuiz(@PathVariable Long id) {
-        return quizService.getQuizById(id);
+    public ResponseEntity<Quiz> getQuiz(@PathVariable Long id) {
+        return quizService.getQuizById(id)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
     }
+
 
     //QUIZ Dates
     @GetMapping("/active")

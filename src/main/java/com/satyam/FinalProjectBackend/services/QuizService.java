@@ -32,11 +32,24 @@ public class QuizService {
     public void deleteQuiz(Long id) {
         quizRepo.deleteById(id);
     }
-
     public List<Quiz> getOngoingQuizzes() {
         LocalDate today = LocalDate.now();
-        return new ArrayList<>(quizRepo.findByStartDateBeforeAndEndDateAfter(today, today));
+        List<Quiz> allQuizzes = quizRepo.findByStartDateLessThanEqualAndEndDateGreaterThanEqual(today, today);
+
+
+        List<Quiz> ongoingQuizzes = new ArrayList<>();
+
+        for (Quiz quiz : allQuizzes) {
+            if (quiz.getStartDate() != null && quiz.getEndDate() != null) {
+                if (!quiz.getStartDate().isAfter(today) && !quiz.getEndDate().isBefore(today)) {
+                    ongoingQuizzes.add(quiz);
+                }
+            }
+        }
+
+        return ongoingQuizzes;
     }
+
 
     public List<Quiz> getUpcomingQuizzes() {
         LocalDate today = LocalDate.now();

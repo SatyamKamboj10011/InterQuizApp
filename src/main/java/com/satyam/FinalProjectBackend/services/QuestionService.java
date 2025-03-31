@@ -9,7 +9,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.ArrayList;
 
 @Service
 public class QuestionService {
@@ -17,24 +19,18 @@ public class QuestionService {
     @Autowired
     private QuestionRepo questionRepo;
 
-    // ✅ Save a question manually if needed
     public Question saveQuestion(Question question) {
         return questionRepo.save(question);
     }
 
-    // ✅ Get all questions for a specific quiz ID
     public List<Question> getQuestionBasedonQuizId(Long quizId) {
         return questionRepo.findByQuizId(quizId);
     }
 
-    // ✅ Clears previous questions and fetches 10 new ones from OpenTDB
     public void fetchFromOpenTDBAndSave(Quiz quiz) {
-        // Clear old questions for this quiz (prevent duplicates or recursive nesting)
-        questionRepo.deleteByQuiz(quiz); // ❗ Requires custom method in QuestionRepo
+        questionRepo.deleteByQuiz(quiz); // Clear old questions
 
-        // OpenTDB API for 10 multiple choice questions
         String url = "https://opentdb.com/api.php?amount=10&type=multiple";
-
         RestTemplate restTemplate = new RestTemplate();
         OpenTDBResponse response = restTemplate.getForObject(url, OpenTDBResponse.class);
 
@@ -44,11 +40,16 @@ public class QuestionService {
                 question.setQuestionText(item.getQuestion());
                 question.setCorrectAnswer(item.getCorrect_answer());
 
-                // Safe handling of wrong options
-                List<String> wrong = item.getIncorrect_answers();
-                question.setOption1(wrong.size() > 0 ? wrong.get(0) : "");
-                question.setOption2(wrong.size() > 1 ? wrong.get(1) : "");
-                question.setOption3(wrong.size() > 2 ? wrong.get(2) : "");
+                // Combine all options and shuffle
+                List<String> allOptions = new ArrayList<>(item.getIncorrect_answers());
+                allOptions.add(item.getCorrect_answer());
+                Collections.shuffle(allOptions);
+
+                // Assign options
+                question.setOption1(allOptions.get(0));
+                question.setOption2(allOptions.get(1));
+                question.setOption3(allOptions.get(2));
+                question.setOption4(allOptions.get(3));
 
                 question.setQuiz(quiz);
                 questionRepo.save(question);

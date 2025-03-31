@@ -1,8 +1,10 @@
 package com.satyam.FinalProjectBackend.models;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Entity(name = "score")
 public class Score {
@@ -21,8 +23,33 @@ public class Score {
     private int score;
     private LocalDate completedDate;
 
+    private int totalQuestions;
+    @OneToMany(mappedBy = "score", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
+    private List<AnswerHistory> answerHistory;
     public Score(){
 
+    }
+
+    public Score(int totalQuestions, List<AnswerHistory> answerHistory) {
+        this.totalQuestions = totalQuestions;
+        this.answerHistory = answerHistory;
+    }
+
+    public int getTotalQuestions() {
+        return totalQuestions;
+    }
+
+    public void setTotalQuestions(int totalQuestions) {
+        this.totalQuestions = totalQuestions;
+    }
+
+    public List<AnswerHistory> getAnswerHistory() {
+        return answerHistory;
+    }
+
+    public void setAnswerHistory(List<AnswerHistory> answerHistory) {
+        this.answerHistory = answerHistory;
     }
 
     public Score(Long id, User player, Quiz quiz, int score, LocalDate completedDate) {

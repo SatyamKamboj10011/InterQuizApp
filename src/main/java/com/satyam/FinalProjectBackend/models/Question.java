@@ -15,7 +15,7 @@ public class Question {
     private String option1;
     private String option2;
     private String option3;
-
+private String option4;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "quiz_id")
     @com.fasterxml.jackson.annotation.JsonBackReference
@@ -31,6 +31,10 @@ public class Question {
         this.option2 = option2;
         this.option3 = option3;
         this.quiz = quiz;
+    }
+
+    public Question(String option4) {
+        this.option4 = option4;
     }
 
     public Long getId() {
@@ -88,4 +92,13 @@ public class Question {
     public void setQuiz(Quiz quiz) {
         this.quiz = quiz;
     }
+
+    public String getOption4() {
+        return option4;
+    }
+
+    public void setOption4(String option4) {
+        this.option4 = option4;
+    }
 }
+
