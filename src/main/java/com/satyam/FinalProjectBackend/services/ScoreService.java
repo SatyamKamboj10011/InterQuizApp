@@ -60,5 +60,9 @@ public class ScoreService {
     public Optional<Score> getScoreByPlayerAndScoreId(Long playerId, Long scoreId) {
         return scoreRepo.findByIdAndPlayerId(scoreId, playerId);
     }
+    // ✅ Get Answer History by Score ID
+    public List<AnswerHistory> getAnswerHistoryByScoreId(Long scoreId) {
+        return answerHistoryRepo.findByScoreId(scoreId);
+    }
 
 }

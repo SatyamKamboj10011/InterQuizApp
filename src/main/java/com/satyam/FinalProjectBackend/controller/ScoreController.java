@@ -19,15 +19,26 @@ public class ScoreController {
     private ScoreService scoreService;
 
     // Submit a score
-    @PostMapping(value = "/submit", consumes = {"application/json", "application/json;charset=UTF-8"}, produces = "application/json")
+    @PostMapping("/submit")
     public ResponseEntity<?> submitScore(@RequestBody Score score) {
         try {
-            Score savedScore = scoreService.saveScore(score);
-            return ResponseEntity.ok(savedScore);
+            System.out.println("Received Answer History:");
+            if (score.getAnswerHistory() != null) {
+                score.getAnswerHistory().forEach(a -> {
+                    System.out.println("Q: " + a.getQuestion());
+                    System.out.println("Selected: " + a.getSelectedAnswer());
+                    System.out.println("Correct: " + a.getCorrectAnswer());
+                    System.out.println("Correct? " + a.isCorrect());
+                });
+            }
+            Score saved = scoreService.saveScore(score);
+            return ResponseEntity.ok(saved);
         } catch (Exception e) {
+            e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error saving score.");
         }
     }
+
 
     // Get all scores for a specific quiz
     @GetMapping("/quiz/{quizId}")

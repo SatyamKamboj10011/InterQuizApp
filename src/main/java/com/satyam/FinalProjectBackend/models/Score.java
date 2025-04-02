@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity(name = "score")
@@ -24,9 +25,11 @@ public class Score {
     private LocalDate completedDate;
 
     private int totalQuestions;
+
     @OneToMany(mappedBy = "score", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference
-    private List<AnswerHistory> answerHistory;
+    private List<AnswerHistory> answerHistory =new ArrayList<>();
+
     public Score(){
 
     }

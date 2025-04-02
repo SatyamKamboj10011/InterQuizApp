@@ -1,10 +1,11 @@
 package com.satyam.FinalProjectBackend.models;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import org.hibernate.validator.constraints.ISBN;
+
+import java.time.LocalDateTime;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity(name = "user")
 public class User {
@@ -21,9 +22,50 @@ public class User {
     private String address;
     private String role;
 
+    //FORGOT PASSWORD
+    private String resetPasswordToken;
+    private LocalDateTime passwordtokenExpiry;
+
+    public User(Long id, LocalDateTime passwordtokenExpiry, String resetPasswordToken) {
+        this.id = id;
+        this.passwordtokenExpiry = passwordtokenExpiry;
+        this.resetPasswordToken = resetPasswordToken;
+    }
+
+    public String getResetPasswordToken() {
+        return resetPasswordToken;
+    }
+
+    public void setResetPasswordToken(String resetPasswordToken) {
+        this.resetPasswordToken = resetPasswordToken;
+    }
+
+    public LocalDateTime getPasswordtokenExpiry() {
+        return passwordtokenExpiry;
+    }
+
+    public void setPasswordtokenExpiry(LocalDateTime passwordtokenExpiry) {
+        this.passwordtokenExpiry = passwordtokenExpiry;
+    }
+
+    @ElementCollection
+    private Set<Long> likedQuizId = new HashSet<>();
     public User(){
 
     }
+
+    public User(Set<Long> likedQuizId) {
+        this.likedQuizId = likedQuizId;
+    }
+
+    public Set<Long> getLikedQuizId() {
+        return likedQuizId;
+    }
+
+    public void setLikedQuizId(Set<Long> likedQuizId) {
+        this.likedQuizId = likedQuizId;
+    }
+
     public User(Long id, String username, String first_name, String last_name, String email, String password, String profile_picture, String age, String address, String role) {
         this.id = id;
         this.username = username;

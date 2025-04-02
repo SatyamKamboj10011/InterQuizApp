@@ -41,7 +41,7 @@ public class AnswerHistory
         this.id = id;
         this.score = score;
         this.question = question;
-        this.selectedAnswer = selecteAnswer;
+        this.selectedAnswer = selectedAnswer;
         this.isCorrect = isCorrect;
     }
 
@@ -69,12 +69,12 @@ public class AnswerHistory
         this.question = question;
     }
 
-    public String getSelecteAnswer() {
+    public String getSelectedAnswer() {
         return selectedAnswer;
     }
 
-    public void setSelecteAnswer(String selecteAnswer) {
-        this.selectedAnswer = selecteAnswer;
+    public void setSelectedAnswer(String selectedAnswer) {
+        this.selectedAnswer = selectedAnswer;
     }
 
     public boolean isCorrect() {
