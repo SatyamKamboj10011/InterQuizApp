@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,7 +23,7 @@ public class Score {
     private Quiz  quiz;
 
     private int score;
-    private LocalDate completedDate;
+    private LocalDateTime completedDate;
 
     private int totalQuestions;
 
@@ -55,7 +56,7 @@ public class Score {
         this.answerHistory = answerHistory;
     }
 
-    public Score(Long id, User player, Quiz quiz, int score, LocalDate completedDate) {
+    public Score(Long id, User player, Quiz quiz, int score, LocalDateTime completedDate) {
         this.id = id;
         this.player = player;
         this.quiz = quiz;
@@ -95,11 +96,11 @@ public class Score {
         this.score = score;
     }
 
-    public LocalDate getCompletedDate() {
+    public LocalDateTime getCompletedDate() {
         return completedDate;
     }
 
-    public void setCompletedDate(LocalDate completedDate) {
+    public void setCompletedDate(LocalDateTime completedDate) {
         this.completedDate = completedDate;
     }
 }

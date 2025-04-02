@@ -1,5 +1,7 @@
 package com.satyam.FinalProjectBackend.controller;
 
+import com.satyam.FinalProjectBackend.models.Leaderboard;
+import com.satyam.FinalProjectBackend.models.QuizSummary;
 import com.satyam.FinalProjectBackend.models.Score;
 import com.satyam.FinalProjectBackend.services.ScoreService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -63,4 +65,15 @@ public class ScoreController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Score not found for the given player and score ID.");
         }
     }
+
+    @GetMapping("/leaderboard")
+    public List<Leaderboard> getLeaderboard() {
+        return scoreService.getLeaderboard();
+    }
+
+    @GetMapping("/quiz/{quizId}/score-summary")
+    public ResponseEntity<QuizSummary> getScoreSummary(@PathVariable Long quizId) {
+        return ResponseEntity.ok(scoreService.getQuizScoreSummary(quizId));
+    }
+
 }

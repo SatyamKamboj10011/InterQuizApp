@@ -1,18 +1,21 @@
 package com.satyam.FinalProjectBackend.controller;
 
+import com.satyam.FinalProjectBackend.db.QuizRepo;
+import com.satyam.FinalProjectBackend.db.ScoreRepo;
 import com.satyam.FinalProjectBackend.db.UserRepo;
 import com.satyam.FinalProjectBackend.models.Quiz;
+import com.satyam.FinalProjectBackend.models.Score;
 import com.satyam.FinalProjectBackend.models.User;
 import com.satyam.FinalProjectBackend.services.QuestionService;
 import com.satyam.FinalProjectBackend.services.QuizService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @CrossOrigin(origins = "http://localhost:3000")
 @RestController
@@ -24,6 +27,11 @@ public class QuizController {
     @Autowired
     private QuestionService questionService;
 
+    @Autowired
+    private ScoreRepo scoreRepo;
+
+    @Autowired
+    private QuizRepo quizRepo;
     @Autowired
     private UserRepo userRepo;
     @PostMapping(value = "/generateQuestions",consumes = "application/json", produces = "application/json")
@@ -57,6 +65,28 @@ public class QuizController {
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<?> updateQuiz(
+            @PathVariable Long id,
+            @RequestBody Quiz updatedQuizData) {
+
+        Optional<Quiz> optionalQuiz = quizRepo.findById(id);
+        if (optionalQuiz.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Quiz not found");
+        }
+
+        Quiz quiz = optionalQuiz.get();
+
+        // Only update the allowed fields
+        quiz.setName(updatedQuizData.getName());
+        quiz.setStartDate(updatedQuizData.getStartDate());
+        quiz.setEndDate(updatedQuizData.getEndDate());
+
+        quizRepo.save(quiz);
+        return ResponseEntity.ok("Quiz updated successfully");
+    }
+
 
 
     //QUIZ Dates
@@ -97,5 +127,36 @@ public class QuizController {
         User user = userRepo.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
         return ResponseEntity.ok(user.getLikedQuizId());
     }
+
+
+    @GetMapping("/{id}/stats")
+    public ResponseEntity<?> getQuizStats(@PathVariable Long id) {
+        Optional<Quiz> quiz = quizRepo.findById(id);
+        if (quiz.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Quiz not found");
+        }
+
+        Map<String, Object> stats = new HashMap<>();
+
+        // Total players & average score (use your logic if already exists)
+        List<Score> scores = scoreRepo.findByQuizId(id);
+        int totalPlayers = scores.size();
+        double averageScore = scores.stream().mapToDouble(Score::getScore).average().orElse(0.0);
+
+        // ✅ Likes: Count users where likedQuizId contains this quiz's id
+        long likes = userRepo.countByLikedQuizIdContains(id);
+
+        stats.put("totalPlayers", totalPlayers);
+        stats.put("averageScore", averageScore);
+        stats.put("likes", likes);
+        stats.put("scores", scores.stream().map(s -> Map.of(
+                "playerName", s.getPlayer().getUsername(),
+                "score", s.getScore(),
+                "date", s.getCompletedDate()
+        )).toList());
+
+        return ResponseEntity.ok(stats);
+    }
+
 }
 

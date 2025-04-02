@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -56,33 +57,48 @@ public class QuizService {
     public void deleteQuiz(Long id) {
         quizRepo.deleteById(id);
     }
-    public List<Quiz> getOngoingQuizzes() {
-        LocalDate today = LocalDate.now();
-        List<Quiz> allQuizzes = quizRepo.findByStartDateLessThanEqualAndEndDateGreaterThanEqual(today, today);
 
+
+    public List<Quiz> getOngoingQuizzes() {
+        LocalDateTime now = LocalDateTime.now();
+        List<Quiz> allQuizzes = quizRepo.findAll();
 
         List<Quiz> ongoingQuizzes = new ArrayList<>();
-
         for (Quiz quiz : allQuizzes) {
             if (quiz.getStartDate() != null && quiz.getEndDate() != null) {
-                if (!quiz.getStartDate().isAfter(today) && !quiz.getEndDate().isBefore(today)) {
+                if (!quiz.getStartDate().isAfter(now) && !quiz.getEndDate().isBefore(now)) {
                     ongoingQuizzes.add(quiz);
                 }
             }
         }
-
         return ongoingQuizzes;
     }
 
 
     public List<Quiz> getUpcomingQuizzes() {
-        LocalDate today = LocalDate.now();
-        return new ArrayList<>(quizRepo.findByStartDateAfter(today));
+        LocalDateTime now = LocalDateTime.now();
+        List<Quiz> allQuizzes = quizRepo.findAll();
+
+        List<Quiz> upcoming = new ArrayList<>();
+        for (Quiz quiz : allQuizzes) {
+            if (quiz.getStartDate() != null && quiz.getStartDate().isAfter(now)) {
+                upcoming.add(quiz);
+            }
+        }
+        return upcoming;
     }
 
     public List<Quiz> getPastQuizzes() {
-        LocalDate today = LocalDate.now();
-        return new ArrayList<>(quizRepo.findByEndDateBefore(today));
+        LocalDateTime now = LocalDateTime.now();
+        List<Quiz> allQuizzes = quizRepo.findAll();
+
+        List<Quiz> past = new ArrayList<>();
+        for (Quiz quiz : allQuizzes) {
+            if (quiz.getEndDate() != null && quiz.getEndDate().isBefore(now)) {
+                past.add(quiz);
+            }
+        }
+        return past;
     }
 
     public List<Quiz> getAllQuiz() {

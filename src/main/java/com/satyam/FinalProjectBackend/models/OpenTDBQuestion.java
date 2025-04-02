@@ -1,5 +1,7 @@
 package com.satyam.FinalProjectBackend.models;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import java.util.List;
 
 public class OpenTDBQuestion {
@@ -7,8 +9,22 @@ public class OpenTDBQuestion {
     private String correct_answer;
     private List<String> incorrect_answers;
 
+    @JsonProperty("type")
+    private String type;
     public String getQuestion() {
         return question;
+    }
+
+    public OpenTDBQuestion(String type) {
+        this.type = type;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
     }
 
     public void setQuestion(String question) {
